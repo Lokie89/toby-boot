@@ -18,6 +18,8 @@ public class HellobootApplication {
     public static void main(String[] args) {
         ServletWebServerFactory serverFactory = new TomcatServletWebServerFactory();
         WebServer webServer = serverFactory.getWebServer(servletContext -> {
+            HelloController helloController = new HelloController();
+
             servletContext.addServlet("frontController", new HttpServlet() {
                 @Override
                 protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -27,10 +29,12 @@ public class HellobootApplication {
                             && req.getMethod().equals(HttpMethod.GET.name())) {
                         String name = req.getParameter("name");
 
+                        String controllerReturn = helloController.hello(name);
+
                         // 응답의 3요소 : STATUS, HEADERS ( Content Type ), BODY
                         resp.setStatus(HttpStatus.OK.value());
                         resp.setContentType(MediaType.TEXT_PLAIN_VALUE);
-                        resp.getWriter().println("Hello " + name);
+                        resp.getWriter().println(controllerReturn);
                     } else if (req.getRequestURI().equals("/user")) {
                         System.out.println("user 조회");
                     } else {
